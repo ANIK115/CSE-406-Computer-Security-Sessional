@@ -1,0 +1,25 @@
+ssh -i CSE406_key.pem anik@20.244.36.208
+
+sudo su seed
+vncserver -localhost no
+
+scp -i ./CSE406_key.pem exploit_a2.py anik@20.244.36.208:/home/anik
+
+
+sudo sysctl -w kernel.randomize_va_space=0
+sudo ln -sf /bin/zsh /bin/sh
+
+gcc -m32 -o stack -z execstack -fno-stack-protector stack-B2.c
+
+sudo chown root stack
+sudo chmod 4755 stack
+
+gcc -m32 -o stack_dbg -g -z execstack -fno-stack-protector stack-B2.c
+
+gdb a2_dbg
+
+b foo
+
+run
+
+https://defuse.ca/online-x86-assembler.htm#disassembly

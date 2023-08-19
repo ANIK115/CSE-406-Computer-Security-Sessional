@@ -1,0 +1,52 @@
+1) block all types of access to firewall from 172.24.0.11
+
+iptables -A INPUT -s 172.24.0.11 -j DROP
+
+2) block all types of access to firewall from 172.24.0.0/16 network.
+
+iptables -A INPUT -s 172.24.0.0/16 -j DROP
+
+3) block all types of access to firewall from any IP.
+
+iptables -A INPUT -j DROP
+
+4) block web access on firewall from  172.24.0.11 
+
+iptables -A INPUT -p tcp -s 172.24.0.11 --dport 80 -j DROP
+
+5) block ssh and telnet to firewall from 172.24.0.11
+
+iptables -A INPUT -p tcp -s 172.24.0.11 --dports 22,23 -j DROP
+
+6) block ping request to firewall but we can ping from firewall
+
+iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+
+7) block ping from firewall but we can ping to firewall
+
+iptables -A INPUT -p icmp --icmp-type echo-reply -j DROP
+
+8) block ping request from 172.24.0.11 to 192.168.0.2
+
+iptables -A FORWARD -p icmp -s 172.24.0.11 -d 192.168.0.2 --icmp-type echo-request -j DROP
+
+9) block echo-request ICMP packets originating from firewall and going towards 192.168.0.2
+now firewall will not be able to ping 192.168.0.2 but it will be able to ping firewall
+
+iptables -A OUTPUT -p icmp -d 192.168.0.2 --icmp-type echo-request -j DROP
+
+10) block web access from firewall to 172.24.0.11.
+
+iptables -A OUTPUT -p tcp -d 172.24.0.11 --dport 80 -j DROP
+
+11) block incoming web(HTTP) traffic on basis of source port in iptables firewall
+
+iptables -A OUTPUT -p tcp --sport 80 -j DROP
+
+now firewall to 172.24.0.11 is ok. From 172.24.0.11 to firewall is not ok
+
+12) Block incoming web(HTTP) traffic on basis of Source port and Destination IP
+
+iptables -A OUTPUT -p tcp -d 172.24.0.11 --sport 80 -j DROP
+
+now firewall to 172.24.0.11 is ok. From 172.24.0.11 to firewall is not ok. other clients to firewall is ok.
